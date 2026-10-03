@@ -1,0 +1,27 @@
+{
+  "name": "ai-legal-metrology-compliance-mern",
+  "version": "1.0.0",
+  "description": "AI-Powered Legal Metrology & Packaged Commodity Compliance System (MERN Stack: React, Express, MongoDB)",
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "start:backend": "npm --prefix backend start",
+    "test:backend": "npm --prefix backend test",
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "dev": "concurrently --kill-others \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "keywords": [
+    "mern",
+    "react",
+    "express",
+    "mongodb",
+    "legal-metrology",
+    "compliance"
+  ],
+  "author": "",
+  "license": "ISC"
+}

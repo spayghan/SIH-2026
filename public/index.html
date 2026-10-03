@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vyapar Nirikshan Portal - Government MVP</title>
+    <!-- Tailwind CSS for clean, basic government styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        govblue: '#1e3a8a',
+                        govdark: '#0f172a',
+                        govbg: '#f1f5f9'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Alpine.js for lightweight state management -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- FontAwesome for simple icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-govbg text-slate-800 font-sans min-h-screen flex flex-col justify-between" x-data="portalApp()">
+
+    <!-- TOP HEADER -->
+    <header class="bg-govblue text-white shadow-md border-b-4 border-amber-500">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-3 mb-2 md:mb-0">
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-govblue font-bold text-xl border-2 border-amber-400">
+                    🏛️
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight">VYAPAR NIRIKSHAN PORTAL</h1>
+                    <p class="text-xs text-blue-200">Government Retail Inspection & Compliance Decision Support System</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4 text-sm">
+                <span class="bg-blue-900 px-3 py-1 rounded text-xs font-semibold border border-blue-700">Government of Maharashtra</span>
+                <span class="bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded text-xs font-bold">MVP DEMO</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
+
+        <!-- 1. LOGIN PAGE VIEW -->
+        <template x-if="currentView === 'login'">
+            <div class="max-w-4xl mx-auto py-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-govblue">Portal Authentication</h2>
+                    <p class="text-sm text-slate-600">Select your authorized role to access the inspection & compliance system</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- OPTION 1: INSPECTOR LOGIN -->
+                    <div class="bg-white p-6 rounded border border-slate-300 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-2 border-b pb-3 mb-4">
+                                <i class="fa-solid fa-user-shield text-govblue text-lg"></i>
+                                <h3 class="font-bold text-lg text-govblue">Inspector Login</h3>
+                            </div>
+                            <form @submit.prevent="loginInspector" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Inspector ID</label>
+                                    <input type="text" x-model="inspectorId" class="w-full border border-slate-300 p-2 rounded text-sm bg-slate-50 focus:bg-white focus:outline-blue-600" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
+                                    <input type="password" x-model="inspectorPass" class="w-full border border-slate-300 p-2 rounded text-sm bg-slate-50 focus:bg-white focus:outline-blue-600" required>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded text-xs text-blue-900 border border-blue-200">
+                                    <span class="font-bold">Demo Credentials:</span><br>
+                                    ID: <span class="font-mono font-bold">INS-MH-024</span> (Tushar Ganmukhe)<br>
+                                    Pass: <span class="font-mono font-bold">password123</span>
+                                </div>
+                                <button type="submit" class="w-full bg-govblue text-white py-2 rounded text-sm font-semibold hover:bg-blue-900 transition">
+                                    Login as Inspector
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- OPTION 2: ADMINISTRATIVE LOGIN -->
+                    <div class="bg-white p-6 rounded border border-slate-300 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-2 border-b pb-3 mb-4">
+                                <i class="fa-solid fa-gauge-high text-govblue text-lg"></i>
+                                <h3 class="font-bold text-lg text-govblue">Administrative Login</h3>
+                            </div>
+                            <form @submit.prevent="loginAdmin" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Administrator ID</label>
+                                    <input type="text" x-model="adminId" class="w-full border border-slate-300 p-2 rounded text-sm bg-slate-50 focus:bg-white focus:outline-blue-600" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
+                                    <input type="password" x-model="adminPass" class="w-full border border-slate-300 p-2 rounded text-sm bg-slate-50 focus:bg-white focus:outline-blue-600" required>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded text-xs text-blue-900 border border-blue-200">
+                                    <span class="font-bold">Demo Credentials:</span><br>
+                                    ID: <span class="font-mono font-bold">ADM-MH-001</span> (Shashvat)<br>
+                                    Pass: <span class="font-mono font-bold">password123</span>
+                                </div>
+                                <button type="submit" class="w-full bg-govblue text-white py-2 rounded text-sm font-semibold hover:bg-blue-900 transition">
+                                    Login as Administrator
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ADMINISTRATOR PORTAL -->
+        <template x-if="currentRole === 'admin' && currentView !== 'login'">
+            <div>
+                <nav class="bg-white border-b border-slate-300 mb-6 px-4 py-2 flex justify-between items-center rounded shadow-sm">
+                    <div class="flex items-center space-x-6 text-sm">
+                        <span class="font-bold text-govblue"><i class="fa-solid fa-gauge-high mr-1"></i> <span x-text="adminProfile.name || 'Administrator'"></span> (ADM-MH-001)</span>
+                        <div class="space-x-4 hidden md:block">
+                            <button @click="adminTab = 'overview'" :class="{'font-bold text-govblue border-b-2 border-govblue pb-1': adminTab === 'overview', 'text-slate-600': adminTab !== 'overview'}">Overview</button>
+                            <button @click="adminTab = 'inspections'; fetchAdminInspections()" :class="{'font-bold text-govblue border-b-2 border-govblue pb-1': adminTab === 'inspections', 'text-slate-600': adminTab !== 'inspections'}">All Inspections</button>
+                            <button @click="adminTab = 'regions'; fetchRegionalAnalysis()" :class="{'font-bold text-govblue border-b-2 border-govblue pb-1': adminTab === 'regions', 'text-slate-600': adminTab !== 'regions'}">Regional Risk</button>
+                        </div>
+                    </div>
+                    <button @click="logout()" class="text-xs bg-red-100 text-red-700 px-3 py-1.5 rounded border border-red-300 font-semibold hover:bg-red-200"><i class="fa-solid fa-right-from-bracket mr-1"></i> Logout</button>
+                </nav>
+
+                <div x-show="adminTab === 'overview'">
+                    <div class="mb-6"><h2 class="text-2xl font-bold text-govblue">Administrative Control Room</h2><p class="text-sm text-slate-600 mt-1">Live oversight of field inspections submitted by connected inspectors.</p></div>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6"><template x-for="card in adminCards" :key="card.label"><div class="bg-white border border-slate-300 rounded p-4 shadow-sm"><p class="text-xs uppercase font-bold text-slate-500" x-text="card.label"></p><p class="text-2xl font-bold text-govblue mt-2" x-text="card.value"></p></div></template></div>
+                    <div class="bg-white border border-slate-300 rounded shadow-sm p-5"><div class="flex justify-between items-center border-b pb-3 mb-3"><h3 class="font-bold text-govblue">Latest Field Activity</h3><button @click="adminTab = 'inspections'; fetchAdminInspections()" class="text-xs text-blue-700 font-semibold hover:underline">View all inspections</button></div><div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-slate-100 text-xs uppercase"><tr><th class="p-3">Inspection</th><th class="p-3">Establishment</th><th class="p-3">Inspector</th><th class="p-3">Status</th><th class="p-3">Action</th></tr></thead><tbody class="divide-y divide-slate-200"><template x-for="item in adminInspections.slice(0, 5)" :key="item.inspection_id"><tr><td class="p-3 font-mono font-bold text-govblue" x-text="item.inspection_id"></td><td class="p-3" x-text="item.shop_name"></td><td class="p-3 text-xs" x-text="item.inspector_name"></td><td class="p-3"><span class="px-2 py-1 rounded text-xs font-semibold" :class="statusClass(item.status)" x-text="item.status"></span></td><td class="p-3"><button @click="viewAdminInspection(item.inspection_id)" class="text-xs bg-slate-200 px-3 py-1 rounded font-semibold hover:bg-slate-300">View case</button></td></tr></template></tbody></table></div></div>
+                </div>
+
+                <div x-show="adminTab === 'inspections'" class="bg-white border border-slate-300 rounded shadow-sm p-5"><div class="flex justify-between items-center border-b pb-3 mb-3"><h3 class="font-bold text-govblue">All Connected Inspector Submissions</h3><button @click="fetchAdminInspections()" class="text-xs text-blue-700 font-semibold"><i class="fa-solid fa-rotate mr-1"></i>Refresh</button></div><div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-slate-100 text-xs uppercase"><tr><th class="p-3">ID / Date</th><th class="p-3">Establishment</th><th class="p-3">District</th><th class="p-3">Inspector</th><th class="p-3">Findings</th><th class="p-3">Status</th><th class="p-3">Action</th></tr></thead><tbody class="divide-y divide-slate-200"><template x-for="item in adminInspections" :key="item.inspection_id"><tr class="hover:bg-slate-50"><td class="p-3"><div class="font-mono font-bold text-govblue" x-text="item.inspection_id"></div><div class="text-xs text-slate-500" x-text="item.date"></div></td><td class="p-3"><div class="font-medium" x-text="item.shop_name"></div><div class="text-xs text-slate-500" x-text="item.owner_name"></div></td><td class="p-3 text-xs" x-text="item.district"></td><td class="p-3 text-xs" x-text="item.inspector_name"></td><td class="p-3 font-bold" x-text="item.violations_count"></td><td class="p-3"><span class="px-2 py-1 rounded text-xs font-semibold" :class="statusClass(item.status)" x-text="item.status"></span></td><td class="p-3"><button @click="viewAdminInspection(item.inspection_id)" class="text-xs bg-slate-200 px-3 py-1 rounded font-semibold hover:bg-slate-300">View case</button></td></tr></template></tbody></table></div></div>
+
+                <div x-show="adminTab === 'regions'" class="bg-white border border-slate-300 rounded shadow-sm p-5"><h3 class="font-bold text-govblue border-b pb-3 mb-4">Regional Risk Analysis</h3><div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-slate-100 text-xs uppercase"><tr><th class="p-3">Region</th><th class="p-3">Total</th><th class="p-3">Passed</th><th class="p-3">Failed</th><th class="p-3">Risk</th></tr></thead><tbody class="divide-y divide-slate-200"><template x-for="region in regionalRisk" :key="region.region"><tr><td class="p-3 font-semibold" x-text="region.region"></td><td class="p-3" x-text="region.total_inspections"></td><td class="p-3 text-green-700 font-semibold" x-text="region.passed"></td><td class="p-3 text-red-700 font-semibold" x-text="region.failed"></td><td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold" :class="region.risk_level === 'HIGH' ? 'bg-red-100 text-red-700' : region.risk_level === 'MEDIUM' ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'" x-text="region.risk_level"></span></td></tr></template></tbody></table></div></div>
+
+                <div x-show="adminTab === 'case'" class="bg-white border border-slate-300 rounded shadow-sm p-6 max-w-3xl mx-auto"><div class="flex justify-between border-b pb-3 mb-4"><h3 class="font-bold text-lg text-govblue">Inspection Case Review</h3><button @click="adminTab = 'inspections'" class="text-xs bg-slate-200 px-3 py-1 rounded font-semibold">Back</button></div><template x-if="adminCase"><div class="space-y-4"><div class="grid grid-cols-2 gap-3 text-sm bg-slate-50 p-4 rounded border"><div><span class="text-xs uppercase text-slate-500 font-bold">Inspection ID</span><p class="font-mono font-bold text-govblue" x-text="adminCase.inspection_id"></p></div><div><span class="text-xs uppercase text-slate-500 font-bold">Status</span><p class="font-bold" x-text="adminCase.status"></p></div><div><span class="text-xs uppercase text-slate-500 font-bold">Establishment</span><p x-text="adminCase.shop_name"></p></div><div><span class="text-xs uppercase text-slate-500 font-bold">Inspector</span><p x-text="adminCase.inspector_name + ' (' + adminCase.inspector_id + ')' "></p></div><div class="col-span-2"><span class="text-xs uppercase text-slate-500 font-bold">Address</span><p x-text="adminCase.address + ', ' + adminCase.district"></p></div></div><div><h4 class="font-bold text-govblue mb-2">Rule Engine Findings</h4><template x-if="adminCase.violations && adminCase.violations.length"><div class="space-y-2"><template x-for="(violation, index) in adminCase.violations" :key="index"><div class="bg-red-50 border border-red-200 rounded p-3 text-sm"><p class="font-bold text-red-800" x-text="violation.violation_name"></p><p class="text-xs mt-1" x-text="violation.reason"></p><p class="text-xs font-bold text-red-700 mt-1" x-text="violation.fine"></p></div></template></div></template><p x-show="!adminCase.violations || !adminCase.violations.length" class="text-sm text-green-700 font-semibold">No violations recorded.</p></div></div></template></div>
+            </div>
+        </template>
+
+        <!-- 2. INSPECTOR PORTAL VIEWS -->
+        <template x-if="currentRole === 'inspector' && currentView !== 'login'">
+            <div>
+                <!-- INSPECTOR NAV -->
+                <nav class="bg-white border-b border-slate-300 mb-6 px-4 py-2 flex justify-between items-center rounded shadow-sm">
+                    <div class="flex items-center space-x-6 text-sm">
+                        <span class="font-bold text-govblue"><i class="fa-solid fa-user-shield mr-1"></i> Tushar Ganmukhe (INS-MH-024)</span>
+                        <div class="space-x-4 hidden md:block">
+                            <button @click="inspectorTab = 'home'" :class="{'font-bold text-govblue border-b-2 border-govblue pb-1': inspectorTab === 'home', 'text-slate-600': inspectorTab !== 'home'}">Home</button>
+                            <button @click="inspectorTab = 'profile'; fetchProfile()" :class="{'font-bold text-govblue border-b-2 border-govblue pb-1': inspectorTab === 'profile', 'text-slate-600': inspectorTab !== 'profile'}">Profile</button>
+                            <button @click="inspectorTab = 'history'; fetchHistory()" :class="{'font-bold text-govblue border-b-2 border-govblue pb-1': inspectorTab === 'history', 'text-slate-600': inspectorTab !== 'history'}">History</button>
+                        </div>
+                    </div>
+                    <div>
+                        <button @click="logout()" class="text-xs bg-red-100 text-red-700 px-3 py-1.5 rounded border border-red-300 font-semibold hover:bg-red-200">
+                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                        </button>
+                    </div>
+                </nav>
+
+                <!-- TAB: HOME / INSPECTOR DASHBOARD -->
+                <div x-show="inspectorTab === 'home'">
+                    <div class="bg-white p-6 rounded border border-slate-300 shadow-sm mb-6 flex flex-col md:flex-row justify-between items-center">
+                        <div>
+                            <h2 class="text-xl font-bold text-govblue">Welcome, Tushar Ganmukhe</h2>
+                            <p class="text-xs text-slate-600 mt-1">District: Amravati | Assigned Region: Amravati Urban</p>
+                        </div>
+                        <div class="mt-4 md:mt-0">
+                            <button @click="startNewInspection()" class="bg-govblue text-white px-5 py-2.5 rounded font-bold text-sm shadow hover:bg-blue-900 transition flex items-center space-x-2">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>New Inspection</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- INSPECTION VERIFICATION STATUS SECTION -->
+                    <div class="bg-white p-6 rounded border border-slate-300 shadow-sm">
+                        <div class="flex justify-between items-center mb-4 border-b pb-2">
+                            <h3 class="font-bold text-base text-govblue">Inspection Verification Status</h3>
+                            <button @click="fetchHistory()" class="text-xs text-blue-700 hover:underline font-semibold"><i class="fa-solid fa-rotate mr-1"></i>Refresh List</button>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-100 text-slate-700 border-b text-xs uppercase">
+                                        <th class="p-3">Inspection ID</th>
+                                        <th class="p-3">Shop Name</th>
+                                        <th class="p-3">Date</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200">
+                                    <template x-for="item in inspectionHistory" :key="item.inspection_id">
+                                        <tr class="hover:bg-slate-50">
+                                            <td class="p-3 font-mono font-bold text-govblue" x-text="item.inspection_id"></td>
+                                            <td class="p-3 font-medium" x-text="item.shop_name"></td>
+                                            <td class="p-3 text-xs text-slate-600" x-text="item.date"></td>
+                                            <td class="p-3">
+                                                <span x-show="item.status === 'Processing'" class="bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded font-semibold inline-flex items-center">
+                                                    <i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Processing
+                                                </span>
+                                                <span x-show="item.status === 'Passed'" class="bg-green-100 text-green-800 text-xs px-2.5 py-1 rounded font-semibold inline-flex items-center">
+                                                    <i class="fa-solid fa-check mr-1.5"></i> Passed
+                                                </span>
+                                                <span x-show="item.status === 'Failed'" class="bg-red-100 text-red-800 text-xs px-2.5 py-1 rounded font-semibold inline-flex items-center">
+                                                    <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Failed
+                                                </span>
+                                            </td>
+                                            <td class="p-3">
+                                                <button @click="viewResult(item.inspection_id)" class="text-xs bg-slate-200 text-slate-800 px-2.5 py-1 rounded hover:bg-slate-300 font-medium">
+                                                    View Case
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: PROFILE -->
+                <div x-show="inspectorTab === 'profile'" class="bg-white p-6 rounded border border-slate-300 shadow-sm max-w-xl mx-auto">
+                    <h3 class="font-bold text-lg text-govblue border-b pb-2 mb-4">Inspector Profile</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-slate-500 font-bold">Inspector ID:</span>
+                            <span class="font-mono font-bold text-govblue" x-text="inspectorProfile.inspector_id || 'INS-MH-024'"></span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-slate-500 font-bold">Full Name:</span>
+                            <span x-text="inspectorProfile.name || 'Tushar Ganmukhe'"></span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-slate-500 font-bold">Department:</span>
+                            <span x-text="inspectorProfile.department || 'Retail & Food Safety Inspection'"></span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-slate-500 font-bold">District / Region:</span>
+                            <span x-text="(inspectorProfile.district || 'Amravati') + ' (' + (inspectorProfile.assigned_region || 'Amravati Urban') + ')'"></span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-slate-500 font-bold">Designation:</span>
+                            <span x-text="inspectorProfile.designation || 'Field Inspector'"></span>
+                        </div>
+                    </div>
+                    <button @click="inspectorTab = 'home'" class="mt-6 bg-slate-200 px-4 py-2 rounded text-xs font-semibold hover:bg-slate-300">Back to Dashboard</button>
+                </div>
+
+                <!-- TAB: HISTORY -->
+                <div x-show="inspectorTab === 'history'" class="bg-white p-6 rounded border border-slate-300 shadow-sm">
+                    <h3 class="font-bold text-base text-govblue mb-4 border-b pb-2">Complete Inspection History Log</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 border-b text-xs uppercase">
+                                    <th class="p-3">Inspection ID</th>
+                                    <th class="p-3">Shop Name</th>
+                                    <th class="p-3">Location</th>
+                                    <th class="p-3">Date</th>
+                                    <th class="p-3">Status</th>
+                                    <th class="p-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <template x-for="item in inspectionHistory" :key="item.inspection_id">
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="p-3 font-mono font-bold text-govblue" x-text="item.inspection_id"></td>
+                                        <td class="p-3 font-medium" x-text="item.shop_name"></td>
+                                        <td class="p-3 text-xs text-slate-600" x-text="item.location"></td>
+                                        <td class="p-3 text-xs text-slate-600" x-text="item.date"></td>
+                                        <td class="p-3">
+                                            <span class="px-2.5 py-1 rounded text-xs font-semibold" :class="{
+                                                'bg-amber-100 text-amber-800': item.status === 'Processing',
+                                                'bg-green-100 text-green-800': item.status === 'Passed',
+                                                'bg-red-100 text-red-800': item.status === 'Failed'
+                                            }" x-text="item.status"></span>
+                                        </td>
+                                        <td class="p-3">
+                                            <button @click="viewResult(item.inspection_id)" class="text-xs bg-slate-200 text-slate-800 px-2.5 py-1 rounded hover:bg-slate-300">View</button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button @click="inspectorTab = 'home'" class="mt-6 bg-slate-200 px-4 py-2 rounded text-xs font-semibold hover:bg-slate-300">Back to Dashboard</button>
+                </div>
+
+                <!-- WIZARD: STEP 1 - ESTABLISHMENT DETAILS -->
+                <div x-show="inspectorTab === 'new_step1'" class="bg-white p-6 rounded border border-slate-300 shadow-sm max-w-2xl mx-auto">
+                    <div class="border-b pb-3 mb-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-lg text-govblue">New Inspection</h3>
+                            <p class="text-xs text-slate-600">Enter Basic Establishment Details (Step 1 of 2)</p>
+                        </div>
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold">Step 1 / 2</span>
+                    </div>
+
+                    <form @submit.prevent="submitEstablishment" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Shop / Establishment Name *</label>
+                                <input type="text" x-model="formData.shop_name" class="w-full border p-2 rounded text-sm bg-slate-50 focus:bg-white" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Owner Name *</label>
+                                <input type="text" x-model="formData.owner_name" class="w-full border p-2 rounded text-sm bg-slate-50 focus:bg-white" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Product Barcode / SKU *</label>
+                                <input type="text" x-model="formData.barcode" class="w-full border p-2 rounded text-sm bg-slate-50 focus:bg-white font-mono" required placeholder="e.g. 8901030541203">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Product Category *</label>
+                                <select x-model="formData.product_category" class="w-full border p-2 rounded text-sm bg-slate-50 focus:bg-white" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Packaged Food & Commodities">Packaged Food & Commodities</option>
+                                    <option value="Retail Packaged Goods">Retail Packaged Goods</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Address *</label>
+                                <input type="text" x-model="formData.address" class="w-full border p-2 rounded text-sm bg-slate-50 focus:bg-white" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">GST Number (15-digit) *</label>
+                                <input type="text" x-model="formData.gst_number" class="w-full border p-2 rounded text-sm bg-slate-50 focus:bg-white font-mono uppercase" required placeholder="27AABCS1429B1Z8">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">FSSAI License Number (14-digit) *</label>
+                                <input type="text" x-model="formData.fssai_license_number" class="w-full border p-2 rounded text-sm bg-slate-50 focus:bg-white font-mono" required placeholder="10020030000412">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-3 pt-4 border-t">
+                            <button type="button" @click="inspectorTab = 'home'" class="bg-slate-200 text-slate-700 px-4 py-2 rounded text-sm font-semibold hover:bg-slate-300">Cancel</button>
+                            <button type="submit" class="bg-govblue text-white px-5 py-2 rounded text-sm font-semibold hover:bg-blue-900 transition flex items-center space-x-1">
+                                <span>Verify & Next</span>
+                                <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- WIZARD: STEP 2 - PRODUCT VERIFICATION (IMAGE UPLOAD) -->
+                <div x-show="inspectorTab === 'new_step2'" class="bg-white p-6 rounded border border-slate-300 shadow-sm max-w-2xl mx-auto">
+                    <div class="border-b pb-3 mb-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-lg text-govblue">Product Verification</h3>
+                            <p class="text-xs text-slate-600">Upload Product Evidence Images (Step 2 of 2)</p>
+                        </div>
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold">Step 2 / 2</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 border border-blue-200 p-3 rounded text-xs text-blue-900">
+                            <p>Capture clear photographs of the product's front and back packaging. This is required for evidence in case of violations.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Front Image -->
+                            <div class="border-2 border-dashed border-slate-300 p-4 rounded text-center bg-slate-50">
+                                <i class="fa-solid fa-camera text-2xl text-slate-400 mb-2"></i>
+                                <p class="text-sm font-semibold text-slate-700 mb-2">Product Front Image *</p>
+                                <label class="bg-govblue text-white text-xs px-3 py-1.5 rounded font-semibold cursor-pointer hover:bg-blue-900 block w-max mx-auto">
+                                    <i class="fa-solid fa-upload mr-1"></i> Choose / Camera
+                                    <input type="file" accept="image/*" @change="frontFile = $event.target.files[0]" class="hidden">
+                                </label>
+                                <template x-if="frontFile">
+                                    <p class="text-[10px] text-green-700 font-bold mt-2 truncate px-2" x-text="frontFile.name"></p>
+                                </template>
+                            </div>
+
+                            <!-- Back Image -->
+                            <div class="border-2 border-dashed border-slate-300 p-4 rounded text-center bg-slate-50">
+                                <i class="fa-solid fa-camera text-2xl text-slate-400 mb-2"></i>
+                                <p class="text-sm font-semibold text-slate-700 mb-2">Product Back Image *</p>
+                                <label class="bg-govblue text-white text-xs px-3 py-1.5 rounded font-semibold cursor-pointer hover:bg-blue-900 block w-max mx-auto">
+                                    <i class="fa-solid fa-upload mr-1"></i> Choose / Camera
+                                    <input type="file" accept="image/*" @change="backFile = $event.target.files[0]" class="hidden">
+                                </label>
+                                <template x-if="backFile">
+                                    <p class="text-[10px] text-green-700 font-bold mt-2 truncate px-2" x-text="backFile.name"></p>
+                                </template>
+                            </div>
+                        </div>
+
+                        <template x-if="isUploading">
+                            <div class="bg-amber-50 border border-amber-200 p-3 rounded text-center text-xs text-amber-800">
+                                <i class="fa-solid fa-spinner fa-spin mr-1"></i> <span x-text="loadingMessage">Submitting inspection data to AI Rule Engine...</span>
+                            </div>
+                        </template>
+
+                        <div class="flex justify-between space-x-3 pt-4 border-t">
+                            <button type="button" @click="inspectorTab = 'new_step1'" class="bg-slate-200 text-slate-700 px-4 py-2 rounded text-sm font-semibold hover:bg-slate-300">Previous</button>
+                            <button type="button" @click="submitVerification()" :disabled="isUploading" class="bg-govblue text-white px-5 py-2 rounded text-sm font-semibold hover:bg-blue-900 transition shadow">
+                                Continue Inspection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INSPECTION RESULT / INSPECTOR REVIEW VIEW -->
+                <div x-show="inspectorTab === 'result'" class="bg-white p-6 rounded border border-slate-300 shadow-sm max-w-2xl mx-auto">
+                    <div class="border-b pb-3 mb-4 flex justify-between items-center">
+                        <h3 class="font-bold text-lg text-govblue">Inspection Verification Result</h3>
+                        <button @click="inspectorTab = 'home'" class="text-xs bg-slate-200 px-3 py-1 rounded font-medium hover:bg-slate-300">Dashboard</button>
+                    </div>
+
+                    <template x-if="activeInspection">
+                        <div class="space-y-4">
+                            <!-- STATUS BANNER -->
+                            <div class="p-4 rounded border text-center" :class="{
+                                'bg-amber-50 border-amber-300 text-amber-900': activeInspection.status === 'Processing',
+                                'bg-green-50 border-green-300 text-green-900': activeInspection.status === 'Passed',
+                                'bg-red-50 border-red-300 text-red-900': activeInspection.status === 'Failed'
+                            }">
+                                <template x-if="activeInspection.status === 'Processing'">
+                                    <div>
+                                        <i class="fa-solid fa-spinner fa-spin text-2xl mb-1"></i>
+                                        <p class="font-bold text-base">Inspection is being processed by AI Worker...</p>
+                                    </div>
+                                </template>
+                                <template x-if="activeInspection.status === 'Passed'">
+                                    <div>
+                                        <i class="fa-solid fa-circle-check text-2xl text-green-600 mb-1"></i>
+                                        <p class="font-bold text-base">Inspection Passed</p>
+                                        <p class="text-xs mt-1">No violations detected by the Rule Engine.</p>
+                                    </div>
+                                </template>
+                                <template x-if="activeInspection.status === 'Failed'">
+                                    <div>
+                                        <i class="fa-solid fa-triangle-exclamation text-2xl text-red-600 mb-1"></i>
+                                        <p class="font-bold text-base">Inspection Failed - Review Required</p>
+                                        <p class="text-xs mt-1">System detected violations. Inspector review necessary.</p>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- COMPLIANCE SUMMARY BLOCK -->
+                            <div class="bg-slate-50 p-4 rounded border space-y-2 text-sm">
+                                <h4 class="font-bold text-govblue text-sm border-b pb-1 mb-2">Compliance Summary</h4>
+                                <div class="flex justify-between border-b pb-1">
+                                    <span class="text-slate-500 text-xs font-bold uppercase">Inspection ID:</span>
+                                    <span class="font-mono font-bold text-govblue" x-text="activeInspection.inspection_id"></span>
+                                </div>
+                                <div class="flex justify-between border-b pb-1">
+                                    <span class="text-slate-500 text-xs font-bold uppercase">GST Verification:</span>
+                                    <span x-text="activeInspection.gst_verification_status" :class="activeInspection.gst_verification_status === 'Verified' ? 'text-green-600 font-bold' : 'text-red-600 font-bold'"></span>
+                                </div>
+                                <div class="flex justify-between border-b pb-1">
+                                    <span class="text-slate-500 text-xs font-bold uppercase">FSSAI Verification:</span>
+                                    <span x-text="activeInspection.fssai_verification_status" :class="activeInspection.fssai_verification_status === 'Verified' ? 'text-green-600 font-bold' : 'text-red-600 font-bold'"></span>
+                                </div>
+                                <div class="flex justify-between border-b pb-1">
+                                    <span class="text-slate-500 text-xs font-bold uppercase">Violations Detected:</span>
+                                    <span class="font-bold text-red-700" x-text="activeInspection.violations ? activeInspection.violations.length : 0"></span>
+                                </div>
+                            </div>
+
+                            <!-- MULTIPLE VIOLATIONS LIST (Only if Failed) -->
+                            <template x-if="activeInspection.status === 'Failed' && activeInspection.violations && activeInspection.violations.length > 0">
+                                <div class="space-y-3">
+                                    <h4 class="font-bold text-red-800 text-sm mt-4 border-b border-red-200 pb-1">Detected Violations Detail:</h4>
+                                    
+                                    <template x-for="(v, index) in activeInspection.violations" :key="index">
+                                        <div class="bg-red-50 border border-red-200 p-3 rounded text-sm space-y-1">
+                                            <p class="font-bold text-red-800" x-text="(index+1) + '. ' + v.violation_name"></p>
+                                            <p class="text-xs"><span class="font-bold text-slate-700">Law:</span> <span class="text-slate-800" x-text="v.law"></span></p>
+                                            <p class="text-xs"><span class="font-bold text-slate-700">Section/Rule:</span> <span class="font-mono text-slate-800" x-text="v.section"></span></p>
+                                            <p class="text-xs"><span class="font-bold text-slate-700">Reason:</span> <span class="text-slate-800" x-text="v.reason"></span></p>
+                                            <p class="text-xs"><span class="font-bold text-slate-700">Evidence:</span> <span class="text-slate-800" x-text="v.evidence"></span></p>
+                                            <p class="text-xs"><span class="font-bold text-slate-700">Fine:</span> <span class="text-red-700 font-bold" x-text="v.fine"></span></p>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- INSPECTOR APPROVAL WORKFLOW -->
+                            <template x-if="activeInspection.status === 'Failed' && !activeInspection.inspector_reviewed">
+                                <div class="bg-slate-100 border border-slate-300 p-4 rounded mt-4 text-center">
+                                    <p class="text-sm font-bold text-slate-800 mb-3">Inspector Authorization Required</p>
+                                    <div class="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-3">
+                                        <button @click="reviewInspection(activeInspection.inspection_id, 'reject')" class="bg-slate-500 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-slate-600 transition">
+                                            Reject / Send Back
+                                        </button>
+                                        <button @click="reviewInspection(activeInspection.inspection_id, 'approve')" class="bg-red-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-red-700 shadow transition">
+                                            Approve Violation & Generate Challan
+                                        </button>
+                                    </div>
+                                    <p class="text-[10px] text-slate-500 mt-2">No final challan will be generated without explicit inspector approval.</p>
+                                </div>
+                            </template>
+
+                            <!-- VIEW CHALLAN BUTTON (ONLY AFTER APPROVAL) -->
+                            <template x-if="activeInspection.inspector_reviewed && activeInspection.inspector_approval_status === 'Approved'">
+                                <div class="text-center pt-4 border-t mt-4">
+                                    <p class="text-xs text-green-700 font-bold mb-2">✅ Case Approved. Challan successfully generated.</p>
+                                    <button @click="viewChallan(activeInspection.inspection_id)" class="bg-govblue text-white px-6 py-2.5 rounded font-bold text-sm hover:bg-blue-900 transition shadow flex items-center justify-center space-x-2 mx-auto">
+                                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                                        <span>View Challan</span>
+                                    </button>
+                                </div>
+                            </template>
+                            
+                            <template x-if="activeInspection.inspector_reviewed && activeInspection.inspector_approval_status !== 'Approved'">
+                                <div class="text-center pt-4 border-t mt-4 text-xs font-bold text-amber-700">
+                                    Status: Case was <span x-text="activeInspection.inspector_approval_status"></span> by inspector.
+                                </div>
+                            </template>
+
+                            <div class="text-center pt-2">
+                                <button @click="fetchInspectionResult(activeInspection.inspection_id)" class="text-xs text-blue-700 underline font-semibold">
+                                    <i class="fa-solid fa-rotate mr-1"></i> Refresh Processing Status
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- CHALLAN VIEW & DOWNLOAD -->
+                <div x-show="inspectorTab === 'challan'" class="bg-white p-8 rounded border border-slate-300 shadow-sm max-w-2xl mx-auto">
+                    <template x-if="activeChallan">
+                        <div class="space-y-6">
+                            <!-- Government Document Header -->
+                            <div class="text-center border-b-2 border-slate-800 pb-4">
+                                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-500">Government of India</h4>
+                                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-600 mt-0.5">Ministry of Consumer Affairs</h4>
+                                <h3 class="text-xl font-bold text-govblue mt-2">OFFICIAL NOTICE OF OFFENCE / E-CHALLAN</h3>
+                                <p class="text-xs text-slate-800 mt-1 font-mono font-bold bg-slate-100 py-1 rounded inline-block px-3" x-text="activeChallan.challan_id"></p>
+                            </div>
+
+                            <!-- Challan Meta -->
+                            <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded border">
+                                <div>
+                                    <span class="text-slate-500 font-bold block uppercase">Date & Time:</span>
+                                    <span class="text-slate-700" x-text="activeChallan.date"></span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-slate-500 font-bold block uppercase">Inspection ID:</span>
+                                    <span class="font-mono font-semibold" x-text="activeChallan.inspection_id"></span>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="text-slate-500 font-bold block uppercase">Inspecting Officer:</span>
+                                    <span class="font-semibold text-slate-700" x-text="activeChallan.inspector"></span>
+                                </div>
+                            </div>
+
+                            <!-- Multi-Violations Display in Challan -->
+                            <div class="space-y-4 text-sm border-t border-b py-4">
+                                <h4 class="font-bold text-govblue uppercase text-sm">Approved Violations</h4>
+                                <template x-for="(v, index) in activeChallan.violations" :key="index">
+                                    <div class="bg-slate-50 border border-slate-200 p-3 rounded">
+                                        <p class="font-bold text-red-800 text-sm mb-1 uppercase" x-text="'VIOLATION ' + (index+1) + ': ' + v.violation_name"></p>
+                                        <div class="grid grid-cols-1 gap-1 text-xs">
+                                            <p><span class="font-bold text-slate-600">Law:</span> <span x-text="v.law"></span></p>
+                                            <p><span class="font-bold text-slate-600">Section/Rule:</span> <span class="font-mono" x-text="v.section"></span></p>
+                                            <p><span class="font-bold text-slate-600">Description:</span> <span x-text="v.reason"></span></p>
+                                            <p><span class="font-bold text-slate-600">Fine/Penalty:</span> <span class="text-red-700 font-bold" x-text="v.fine"></span></p>
+                                        </div>
+                                    </div>
+                                </template>
+                                
+                                <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded text-right">
+                                    <span class="text-sm font-bold text-slate-700 uppercase">Total Calculated Penalty: </span>
+                                    <span class="text-lg font-bold text-red-700" x-text="activeChallan.total_penalty"></span>
+                                </div>
+                            </div>
+
+                            <!-- Footer instruction & Buttons -->
+                            <div class="pt-2 flex flex-col sm:flex-row justify-between items-center gap-3">
+                                <button @click="inspectorTab = 'home'" class="w-full sm:w-auto text-xs bg-slate-200 text-slate-700 px-4 py-2 rounded font-semibold hover:bg-slate-300">
+                                    <i class="fa-solid fa-arrow-left mr-1"></i> Back to Dashboard
+                                </button>
+                                <div class="flex space-x-2 w-full sm:w-auto">
+                                    <button onclick="window.print()" class="flex-1 sm:flex-none bg-slate-700 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-slate-800 transition shadow">
+                                        <i class="fa-solid fa-print mr-1"></i> Print Challan
+                                    </button>
+                                    <a :href="`${API_BASE}/inspections/${activeChallan.inspection_id}/download-pdf`" target="_blank" class="flex-1 sm:flex-none bg-govblue text-white px-5 py-2 rounded text-sm font-semibold hover:bg-blue-900 transition shadow flex items-center justify-center">
+                                        <i class="fa-solid fa-download mr-1"></i> Download Challan PDF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </main>
+
+    <footer class="bg-white border-t border-slate-300 mt-8 py-4 text-center text-xs text-slate-600">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center">
+            <p>Vyapar Nirikshan Portal MVP • Government Retail Inspection & Compliance System</p>
+            <p class="mt-1 sm:mt-0">Designed for College/Student Innovation Project Demonstration</p>
+        </div>
+    </footer>
+
+    <!-- FRONTEND APP SCRIPT -->
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        function portalApp() {
+            return {
+                currentView: 'login',
+                currentRole: null,
+                
+                inspectorId: 'INS-MH-024',
+                inspectorPass: 'password123',
+                adminId: 'ADM-MH-001',
+                adminPass: 'password123',
+
+                inspectorTab: 'home',
+                adminTab: 'overview',
+
+                inspectionHistory: [],
+                fullHistory: [],
+                inspectorProfile: {},
+                adminProfile: {},
+                adminInspections: [],
+                regionalRisk: [],
+                adminCase: null,
+                adminKpis: {},
+                activeInspection: null,
+                activeChallan: null,
+
+                formData: {
+                    shop_name: 'City Life Super Bazaar',
+                    owner_name: 'Amit Shah',
+                    mobile_number: '9876543210',
+                    address: 'Main Road',
+                    district: 'Amravati',
+                    state: 'Maharashtra',
+                    product_category: 'Packaged Food & Commodities',
+                    barcode: '8901030541203',
+                    gst_number: '27AABCS1429B1Z8',
+                    fssai_license_number: '10020030000412'
+                },
+                frontFile: null,
+                backFile: null,
+                currentCreatedInspectionId: null,
+                isUploading: false,
+                loadingMessage: '',
+
+                get adminCards() {
+                    return [
+                        { label: 'Total inspections', value: this.adminKpis.total_inspections || 0 },
+                        { label: 'Passed', value: this.adminKpis.passed || 0 },
+                        { label: 'Failed', value: this.adminKpis.failed || 0 },
+                        { label: 'Pending', value: this.adminKpis.pending || 0 },
+                        { label: 'High risk areas', value: this.adminKpis.high_risk_areas || 0 }
+                    ];
+                },
+
+                statusClass(status) {
+                    if (status === 'Passed') return 'bg-green-100 text-green-800';
+                    if (status === 'Failed') return 'bg-red-100 text-red-800';
+                    return 'bg-amber-100 text-amber-800';
+                },
+
+                async loginInspector() {
+                    try {
+                        let res = await fetch(`${API_BASE}/auth/inspector-login`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                            body: new URLSearchParams({ inspector_id: this.inspectorId, password: this.inspectorPass })
+                        });
+                        let data = await res.json();
+                        if (data.success) {
+                            this.currentRole = 'inspector';
+                            this.currentView = 'dashboard';
+                            this.inspectorTab = 'home';
+                            this.fetchHistory();
+                            this.fetchProfile();
+                        }
+                    } catch (e) { alert("Backend connection failed."); }
+                },
+
+                async loginAdmin() {
+                    try {
+                        let res = await fetch(`${API_BASE}/auth/admin-login`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                            body: new URLSearchParams({ admin_id: this.adminId, password: this.adminPass })
+                        });
+                        let data = await res.json();
+                        if (data.success) {
+                            this.currentRole = 'admin';
+                            this.currentView = 'dashboard';
+                            this.adminTab = 'overview';
+                            this.adminProfile = data.user;
+                            await Promise.all([
+                                this.fetchAdminDashboard(),
+                                this.fetchAdminInspections(),
+                                this.fetchRegionalAnalysis()
+                            ]);
+                        } else {
+                            alert(data.detail || 'Administrator login failed.');
+                        }
+                    } catch (e) { alert("Backend connection failed."); }
+                },
+
+                logout() {
+                    this.currentRole = null;
+                    this.currentView = 'login';
+                    this.activeInspection = null;
+                    this.activeChallan = null;
+                },
+
+                async fetchProfile() {
+                    try {
+                        let res = await fetch(`${API_BASE}/inspector/profile`);
+                        let json = await res.json();
+                        this.inspectorProfile = json.data;
+                    } catch(e) {}
+                },
+
+                async fetchHistory() {
+                    try {
+                        let res = await fetch(`${API_BASE}/inspector/history`);
+                        let json = await res.json();
+                        this.inspectionHistory = json.data;
+                        this.fullHistory = json.data;
+                    } catch(e) {}
+                },
+
+                async fetchAdminDashboard() {
+                    try {
+                        let res = await fetch(`${API_BASE}/admin/dashboard`);
+                        this.adminKpis = (await res.json()).kpis || {};
+                    } catch(e) { alert('Could not load administrative KPIs.'); }
+                },
+
+                async fetchAdminInspections() {
+                    try {
+                        let res = await fetch(`${API_BASE}/admin/inspections`);
+                        this.adminInspections = (await res.json()).data || [];
+                    } catch(e) { alert('Could not load inspector submissions.'); }
+                },
+
+                async fetchRegionalAnalysis() {
+                    try {
+                        let res = await fetch(`${API_BASE}/admin/regional-analysis`);
+                        this.regionalRisk = (await res.json()).regional_risk_data || [];
+                    } catch(e) { alert('Could not load regional analysis.'); }
+                },
+
+                async viewAdminInspection(inspId) {
+                    try {
+                        let res = await fetch(`${API_BASE}/inspections/${inspId}/result`);
+                        this.adminCase = (await res.json()).data;
+                        this.adminTab = 'case';
+                    } catch(e) { alert('Could not load inspection case.'); }
+                },
+
+                startNewInspection() {
+                    this.frontFile = null;
+                    this.backFile = null;
+                    this.inspectorTab = 'new_step1';
+                },
+
+                async submitEstablishment() {
+                    try {
+                        let formBody = new URLSearchParams();
+                        for (let key in this.formData) {
+                            formBody.append(key, this.formData[key]);
+                        }
+                        let res = await fetch(`${API_BASE}/inspections`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                            body: formBody
+                        });
+                        let json = await res.json();
+                        if (json.success) {
+                            this.currentCreatedInspectionId = json.inspection_id;
+                            if (json.gst_status === 'Invalid' || json.fssai_status === 'Invalid') {
+                                alert(`Warning: GST or FSSAI verification returned Invalid.`);
+                            }
+                            this.inspectorTab = 'new_step2';
+                        }
+                    } catch(e) { alert("Error saving establishment details."); }
+                },
+
+                async submitVerification() {
+                    if (!this.frontFile || !this.backFile) {
+                        alert("Both Product Front and Back images are mandatory.");
+                        return;
+                    }
+                    this.isUploading = true;
+                    this.loadingMessage = "Uploading Front & Back Evidence...";
+                    try {
+                        let uploadData = new FormData();
+                        uploadData.append("front_image", this.frontFile);
+                        uploadData.append("back_image", this.backFile);
+
+                        await fetch(`${API_BASE}/inspections/${this.currentCreatedInspectionId}/products`, {
+                            method: 'POST', body: uploadData
+                        });
+
+                        this.loadingMessage = "Triggering Multi-Rule Engine Worker...";
+                        await fetch(`${API_BASE}/inspections/${this.currentCreatedInspectionId}/verify`, { method: 'POST' });
+
+                        this.isUploading = false;
+                        this.viewResult(this.currentCreatedInspectionId);
+
+                        // Auto-refresh result after 2.5 seconds to pull AI worker findings
+                        setTimeout(async () => {
+                            await this.fetchInspectionResult(this.currentCreatedInspectionId);
+                        }, 2500);
+
+                    } catch(e) {
+                        this.isUploading = false;
+                        alert("Error during verification.");
+                    }
+                },
+
+                async viewResult(inspId) {
+                    await this.fetchInspectionResult(inspId);
+                    this.inspectorTab = 'result';
+                },
+
+                async fetchInspectionResult(inspId) {
+                    try {
+                        let res = await fetch(`${API_BASE}/inspections/${inspId}/result`);
+                        this.activeInspection = (await res.json()).data;
+                    } catch(e) {}
+                },
+
+                async reviewInspection(inspId, action) {
+                    try {
+                        let formBody = new URLSearchParams();
+                        formBody.append("action", action);
+                        let res = await fetch(`${API_BASE}/inspections/${inspId}/review`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                            body: formBody
+                        });
+                        let json = await res.json();
+                        if (json.success) {
+                            alert(json.message);
+                            await this.fetchInspectionResult(inspId);
+                            if (action === 'approve' && this.activeInspection.status === 'Failed') {
+                                this.viewChallan(inspId);
+                            }
+                        } else {
+                            alert(json.detail);
+                        }
+                    } catch(e) { alert("Error submitting approval."); }
+                },
+
+                async viewChallan(inspId) {
+                    try {
+                        let res = await fetch(`${API_BASE}/inspections/${inspId}/challan`);
+                        this.activeChallan = (await res.json()).data;
+                        this.inspectorTab = 'challan';
+                    } catch(e) { alert("Challan not available. Ensure case is reviewed and approved."); }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
